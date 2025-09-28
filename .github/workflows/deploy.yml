@@ -29,6 +29,39 @@ jobs:
         with:
           enablement: true
 
+      - name: Generate config.js
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const required = [
+            'GOOGLE_MAPS_API_KEY',
+            'GOOGLE_OAUTH_CLIENT_ID',
+            'GOOGLE_SHEETS_SPREADSHEET_ID',
+            'GOOGLE_SHEETS_TAB_NAME',
+          ];
+
+          const missing = required.filter((name) => !process.env[name]);
+          if (missing.length) {
+            throw new Error(`Missing required secrets: ${missing.join(', ')}`);
+          }
+
+          const lines = [
+            `export const GOOGLE_MAPS_API_KEY = ${JSON.stringify(process.env.GOOGLE_MAPS_API_KEY)};`,
+            `export const GOOGLE_OAUTH_CLIENT_ID = ${JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID)};`,
+            `export const GOOGLE_SHEETS_SPREADSHEET_ID = ${JSON.stringify(process.env.GOOGLE_SHEETS_SPREADSHEET_ID)};`,
+            `export const GOOGLE_SHEETS_TAB_NAME = ${JSON.stringify(process.env.GOOGLE_SHEETS_TAB_NAME)};`,
+          ];
+
+          fs.writeFileSync(path.join(process.cwd(), 'config.js'), `${lines.join('\n')}\n`);
+          NODE
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_SHEETS_SPREADSHEET_ID: ${{ secrets.GOOGLE_SHEETS_SPREADSHEET_ID }}
+          GOOGLE_SHEETS_TAB_NAME: ${{ secrets.GOOGLE_SHEETS_TAB_NAME }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
