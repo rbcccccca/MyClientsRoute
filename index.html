@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>客户地址排列神器</title>
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="title-block">
+        <h1>客户地址排列神器</h1>
+        <p class="subtitle">一键安排今日拜访路线</p>
+      </div>
+      <button id="quickAdd" class="icon-button" aria-label="添加日程">＋</button>
+    </header>
+
+    <main class="content">
+      <section class="card" id="today-section">
+        <div class="card-header">
+          <h2>今天的客户</h2>
+          <button id="startRoute" class="primary-button">出发</button>
+        </div>
+        <p id="no-plan" class="empty-message">今日暂时无计划</p>
+        <ul id="today-list" class="client-list"></ul>
+        <button id="add-schedule" class="secondary-button">添加日程</button>
+        <div id="route-summary" class="route-summary hidden"></div>
+      </section>
+
+      <section class="card" id="upcoming-section">
+        <div class="card-header">
+          <h2>未来行程</h2>
+        </div>
+        <div id="upcoming-list" class="schedule-groups"></div>
+      </section>
+    </main>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <header class="modal-header">
+          <h3 id="modal-title">添加日程</h3>
+          <button id="close-modal" class="icon-button" aria-label="关闭">×</button>
+        </header>
+        <form id="schedule-form" class="form">
+          <input type="hidden" id="client-id" />
+          <label class="form-field">
+            <span>客户名称 *</span>
+            <input id="client-name" name="name" type="text" required placeholder="请输入客户名称" />
+          </label>
+          <label class="form-field">
+            <span>详细地址 *</span>
+            <input id="client-address" name="address" type="text" required placeholder="请输入或选择地址" autocomplete="off" />
+            <small class="helper-text">支持 Google 地点搜索</small>
+          </label>
+          <div class="form-row">
+            <label class="form-field">
+              <span>见面日期 *</span>
+              <input id="client-date" name="date" type="date" required />
+            </label>
+            <label class="form-field">
+              <span>时间</span>
+              <input id="client-time" name="time" type="time" />
+            </label>
+          </div>
+          <label class="form-field">
+            <span>联系方式</span>
+            <input id="client-contact" name="contact" type="text" placeholder="电话 / 微信" />
+          </label>
+          <div class="modal-actions">
+            <button type="button" id="cancel-form" class="secondary-button">取消</button>
+            <button type="submit" class="primary-button">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <div id="loading" class="loading-backdrop hidden">
+      <div class="loading-spinner"></div>
+      <p>正在为您规划路线...</p>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
