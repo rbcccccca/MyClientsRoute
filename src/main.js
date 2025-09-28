@@ -109,7 +109,20 @@ function renderToday() {
     return;
   }
   elements.noPlan.classList.add('hidden');
-  todayClients.forEach((client) => {
+
+  let orderedClients = todayClients;
+  if (state.latestRoute?.date === today && Array.isArray(state.latestRoute.orderedClients)) {
+    const orderedIds = state.latestRoute.orderedClients.map((client) => client.id);
+    const orderedIdSet = new Set(orderedIds);
+    const clientMap = new Map(todayClients.map((client) => [client.id, client]));
+    const orderedFromRoute = orderedIds
+      .map((id) => clientMap.get(id))
+      .filter(Boolean);
+    const remainingClients = todayClients.filter((client) => !orderedIdSet.has(client.id));
+    orderedClients = [...orderedFromRoute, ...remainingClients];
+  }
+
+  orderedClients.forEach((client) => {
     const li = document.createElement('li');
     li.className = 'client-card';
     li.innerHTML = renderClientInner(client);
@@ -441,11 +454,13 @@ async function handleStartRoute() {
     const directions = await requestDirections(origin, orderedClients);
     const summary = summarizeRoute(directions, orderedClients);
     state.latestRoute = {
+      date: today,
       origin,
       orderedClients,
       summary,
     };
     renderRouteSummary(summary, orderedClients);
+    renderToday();
   } catch (error) {
     console.error(error);
     showToast(typeof error === 'string' ? error : '规划路线失败，请稍后再试');
